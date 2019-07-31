@@ -2,7 +2,7 @@ const knex = require("knex");
 const app = require("../src/app");
 const helpers = require("./test-helpers");
 
-describe('Protected endpoints',()=>{
+describe.only('Protected endpoints',()=>{
   let db
 
   const {
@@ -27,30 +27,31 @@ describe('Protected endpoints',()=>{
   beforeEach('insert users', () =>
     db.into('thingful_users').insert(testUsers)
   )
-    it('responds with 401 missing basic token when no basic token', ()=>{
+    it('responds with 401 missing bearer token when no bearer token', ()=>{
       return supertest(app)
       .get('/api/things/1')
-      .expect(401, {error: 'Missing basic token'})
+      .expect(401, {error: 'Missing bearer token'})
     })
-    it('responds 401 "Unauthorized request" when no credentials in token', ()=>{
-      const userNoCreds = {user_name: '', password: ''}
+    it('responds 401 "Unauthorized request" when invalid JWT secret', ()=>{
+      const validUser = testUsers[0]
+      const invalidSecret = 'bad secret'
       return supertest(app)
       .get('/api/things/1')
-      .set('Authorization', helpers.makeAuthHeader(userNoCreds))
+      .set('Authorization', helpers.makeAuthHeader(validUser, invalidSecret))
       .expect(401, {error: 'Unauthorized request'})
     })
-    it('responds 401 "Unauthorized request" when invalid user', ()=>{
-      const userInvalid = {user_name: 'no-existy', password: 'notauser'}
+    it('responds 401 "Unauthorized request" when invalid sub in payload', ()=>{
+      const userInvalid = {user_name: 'no-existy', id: 1}
       return supertest(app)
       .get('/api/things/1')
       .set('Authorization', helpers.makeAuthHeader(userInvalid))
       .expect(401, {error: 'Unauthorized request'})
     })
-    it('responds 401 "Unauthorized request" when invalid password given', ()=>{
+    /* it.skip('responds 401 "Unauthorized request" when invalid password given', ()=>{
       const userInvalid = { user_name: testUsers[0].user_name, password:'wrong'}
       return supertest(app)
       .get('/api/things/1')
       .set('Authorization', helpers.makeAuthHeader(userInvalid))
       .expect(401, {error: 'Unauthorized request'})
-    })
+    }) */
   })
