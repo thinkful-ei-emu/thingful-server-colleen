@@ -45,13 +45,20 @@ const ReviewsService = {
   },
 
   serializeReview(review) {
+    const { user } = review
+    console.log('line 49', user)
     return {
       id: review.id,
       rating: review.rating,
       text: xss(review.text),
       thing_id: review.thing_id,
       date_created: review.date_created,
-      user: review.user || {},
+      user: {
+        id: user.id,
+        full_name: user.full_name,
+        user_name: user.user_name,
+        date_created: new Date(user.date_created)
+      } || {},
     }
   }
 }
