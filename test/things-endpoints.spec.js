@@ -155,10 +155,7 @@ describe('Things Endpoints', function() {
     })
   })
   describe(`GET /api/things/:thing_id/reviews`, () => {
-    function makeAuthHeader(user){
-      const token = Buffer.from(`${user.user_name}:${user.password}`).toString('base64')
-      return `Basic ${token}`
-    }
+   
     context(`Given no things`, () => {
      
       it(`responds with 404`, () => {
