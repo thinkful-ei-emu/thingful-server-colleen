@@ -46,7 +46,7 @@ const ReviewsService = {
 
   serializeReview(review) {
     const { user } = review
-    console.log('line 49', user)
+    
     return {
       id: review.id,
       rating: review.rating,
